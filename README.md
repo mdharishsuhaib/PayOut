@@ -3,9 +3,7 @@
 
 <img src="public/payout-logo.svg" alt="PayOut" width="220"/>
 
-# PayOut
-
-**PayOut: AI-Powered Payout Intelligence on the PayPal Payouts API**
+**PayOut: PayPal's Payout platform that validates every payout**
 
 *Every payout, checked before money moves.*
 
