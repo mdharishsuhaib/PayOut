@@ -16,9 +16,7 @@ data/*.json
 
 # ---- dependencies, build and tool caches ----
 node_modules
-cloudflare/node_modules
 .wrangler
-cloudflare/.wrangler
 
 # ---- logs and screenshots ----
 *.log

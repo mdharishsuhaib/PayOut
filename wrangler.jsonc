@@ -1,10 +1,10 @@
 {
-  "$schema": "./node_modules/wrangler/config-schema.json",
+  // PayOut frontend on Cloudflare Workers. Deploy from this folder with: npx wrangler deploy
   "name": "payout",
   "main": "./worker.js",
   "compatibility_date": "2026-11-07",
   "assets": {
-    "directory": "../public/",
+    "directory": "./public/",
     "binding": "ASSETS",
     "run_worker_first": ["/api/*", "/auth/*", "/vendor/*", "/healthz"]
   },

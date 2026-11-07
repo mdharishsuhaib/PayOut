@@ -247,10 +247,8 @@ PayOut/
 │   └── payout-logo.svg, paypal-logo.svg, paypal-mark.svg, paypal-wordmark-white.svg
 ├── data/
 │   └── sample.csv               # 11 synthetic contractors in 9 countries
-├── cloudflare/
-│   ├── worker.js                # Serves public/ and forwards /api, /auth, /vendor to Render
-│   ├── wrangler.jsonc           # Worker name, assets, BACKEND_URL
-│   └── package.json             # Wrangler (frontend deploy only)
+├── worker.js                    # Cloudflare Worker: serves public/, forwards /api, /auth, /vendor to Render
+├── wrangler.jsonc               # Cloudflare Worker settings: name, assets, BACKEND_URL
 ├── test/
 │   ├── rules.test.js            # Unit tests for the rules engine (npm test)
 │   ├── e2e.mjs                  # Full run against the real PayPal Sandbox
@@ -352,15 +350,13 @@ Restart the server after any change to `.env`; it is read only at start-up.
 The frontend is plain HTML, CSS and JavaScript modules in `public/`. There is no build step.
 
 - **Locally:** `npm start` serves it at `http://localhost:3100` together with the API.
-- **Deployed:** the Cloudflare Worker in `cloudflare/` serves `public/` and forwards `/api`,
+- **Deployed:** the Cloudflare Worker (`worker.js`, `wrangler.jsonc`) serves `public/` and forwards `/api`,
   `/auth`, `/vendor` and `/healthz` to the backend. Every call from the UI uses a relative path,
   so there is no backend URL or CORS to configure in the frontend.
 
 To preview the Worker locally against your local backend:
 
 ```powershell
-cd cloudflare
-npm install
 npx wrangler dev --port 8788 --var BACKEND_URL:http://localhost:3100
 ```
 
@@ -535,11 +531,9 @@ flowchart LR
 
 ### 2. Frontend on Cloudflare Workers
 
-1. Set `BACKEND_URL` in `cloudflare/wrangler.jsonc` to your Render URL (no trailing slash).
-2. Deploy:
+1. Set `BACKEND_URL` in `wrangler.jsonc` to your Render URL (no trailing slash).
+2. Deploy from the project folder:
    ```powershell
-   cd cloudflare
-   npm install
    npx wrangler deploy
    ```
    The first time, a browser opens to sign in to Cloudflare. It prints your live URL:
@@ -559,7 +553,7 @@ flowchart LR
    webhooks verified**.
 
 To ship changes later: push to GitHub (Render redeploys automatically) and run
-`npx wrangler deploy` in `cloudflare/` if anything in `public/` or the Worker changed.
+`npx wrangler deploy` from the project folder if anything in `public/` or the Worker changed.
 
 ### Other options
 
@@ -634,7 +628,7 @@ Or start on another port: `$env:PORT=3200; npm start`.
 
 | Problem | Fix |
 |---|---|
-| Live site's `/api/...` returns 404 or "PayOut server is waking up" | The Render service is missing, asleep or `BACKEND_URL` is wrong; open the Render URL's `/healthz`, check `cloudflare/wrangler.jsonc`, redeploy the Worker |
+| Live site's `/api/...` returns 404 or "PayOut server is waking up" | The Render service is missing, asleep or `BACKEND_URL` is wrong; open the Render URL's `/healthz`, check `wrangler.jsonc`, redeploy the Worker |
 | Visiting the Render URL redirects to the Worker | Expected: `PAYPAL_RETURN_URL` makes the Worker address the one public address |
 | Batches disappeared on the live site | The Render free plan resets its disk on restart or redeploy; click **Sample** again, or add lasting storage |
 | Login works locally but not live | The live return URL is not added to the PayPal app, or `PAYPAL_RETURN_URL` on Render does not match it exactly |
@@ -666,7 +660,7 @@ Suggested reading order:
 7. `lib/ai.js` and `lib/faq.js` -- how the AI explains, with the Tavily and template fallbacks.
 8. `public/app.js` -- router, sidebar, PayPal AI and live updates.
 9. `public/views/preflight.js`, `payouts.js`, `signals.js`, `resolve.js` -- the main screens.
-10. `cloudflare/worker.js` -- how the frontend and backend share one address.
+10. `worker.js` -- how the frontend and backend share one address.
 
 **Glossary:** **Payout batch** -- one PayPal request that pays many recipients.
 **Payout item** -- one payment inside a batch, with its own status. **Unclaimed** -- sent to an
