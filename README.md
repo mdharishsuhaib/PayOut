@@ -254,7 +254,6 @@ PayOut/
 ├── test/
 │   ├── rules.test.js            # Unit tests for the rules engine (npm test)
 │   ├── e2e.mjs                  # Full run against the real PayPal Sandbox
-│   ├── smoke.mjs                # Quick check against a running server
 │   └── responsive.mjs           # Every page at phone to monitor sizes
 ├── render.yaml                  # Render blueprint for the backend
 ├── .env.example                 # Every setting documented (no values)
@@ -591,7 +590,6 @@ npm run test:responsive
 | `npm test` | Rules engine: routes, currencies, decimals, duplicates, decisions (`test/rules.test.js`) | No |
 | `npm run test:e2e` | Against the real PayPal Sandbox: authentication and credential protection, preflight, payout creation and currency split, batch and item status, webhook verification and duplicate handling, unclaimed cancellation, AI explanations | Yes |
 | `npm run test:responsive` | Every page at phone, tablet, laptop, desktop and monitor sizes, signed out and signed in | No |
-| `node test/smoke.mjs` | Quick check of a running server (`BASE=http://...` to target another one) | Optional |
 
 ---
 

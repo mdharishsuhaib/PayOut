@@ -1,11 +1,26 @@
-node_modules
+# ---- secrets: never commit these ----
 .env
 .env.*
 !.env.example
+.dev.vars
+.dev.vars.*
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+secrets*.json
+
+# ---- local data: customer batches, payouts, sessions, backups ----
 data/*.json
+
+# ---- dependencies, build and tool caches ----
+node_modules
+cloudflare/node_modules
+.wrangler
+cloudflare/.wrangler
+
+# ---- logs and screenshots ----
 *.log
 server.err
 shots
-cloudflare/node_modules
-cloudflare/.wrangler
-.wrangler
