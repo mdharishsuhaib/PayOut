@@ -1,5 +1,5 @@
 // PayPal shell: router, health strip, contextual Ask, live updates (Trace).
-import { $, $$, esc, api, toast, time, docName } from './util.js';
+import { $, $$, esc, api, toast, time, docName, cached, early } from './util.js';
 import * as home from './views/home.js';
 import * as routes from './views/routes.js';
 import * as preflight from './views/preflight.js';
@@ -72,8 +72,8 @@ function applySession() {
   if (on) { tag.textContent = app.user.demo ? 'Judge' : app.user.givenName || app.user.name || app.user.email || 'PayPal user'; tag.title = app.user.demo ? 'Demo session · no PayPal login, PayPal Sandbox only' : `Signed in with PayPal${app.user.email ? ` as ${app.user.email}` : ''}`; }
   renderTry(); // signed-in users also get questions about their own payouts
 }
-async function loadMe() {
-  try { app.auth = await api('/api/me'); app.user = app.auth.user; } catch { app.auth = null; app.user = null; }
+async function loadMe(first) {
+  try { app.auth = await (first ? early('/api/me') : api('/api/me')); app.user = app.auth.user; } catch { app.auth = null; app.user = null; }
   applySession();
 }
 // Demo for judges: a labelled session with no PayPal login, on PayOut's PayPal Sandbox account
@@ -245,6 +245,9 @@ const wide = matchMedia('(min-width: 1101px)');
 const syncBurger = () => {
   const mini = document.body.classList.contains('side-mini');
   $('#burger').setAttribute('aria-expanded', wide.matches ? !mini : document.body.classList.contains('side-open'));
+  // the sidebar edge says what a double-click will do: open the icon rail, or shrink the open sidebar back to it
+  const grip = $('#side-grip'), tip = mini ? 'Double-click to expand' : 'Double-click to hide';
+  grip.title = tip; grip.setAttribute('aria-label', `${tip}. Drag or use the arrow keys to resize the sidebar.`);
 };
 function closeDrawer() { document.body.classList.remove('side-open'); $('#side-dim').hidden = true; syncBurger(); }
 try { if (['mini', 'closed'].includes(localStorage.getItem('payout.side'))) document.body.classList.add('side-mini'); } catch { /* storage off */ }
@@ -265,7 +268,7 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document
 wide.addEventListener('change', () => { closeDrawer(); syncBurger(); });
 syncBurger();
 // Drag the sidebar's right edge to resize it (232–360px, so no label is ever cut off). Dragging below 150px snaps it to the icon rail; dragging the
-// rail back out opens it again. Double-click the edge to collapse/expand; ←/→ on the focused edge resize from the keyboard.
+// rail back out opens it again. Double-click the edge to hide it to the rail or expand it back; ←/→ on the focused edge resize from the keyboard.
 {
   const MIN = 232, MAX = 360, SNAP = 150, root = document.documentElement, grip = $('#side-grip');
   const setW = (w) => { root.style.setProperty('--side-full', `${w}px`); grip.setAttribute('aria-valuenow', w); };
@@ -285,7 +288,7 @@ syncBurger();
       document.body.classList.remove('side-dragging'); save(); };
     grip.addEventListener('pointermove', move); grip.addEventListener('pointerup', up); grip.addEventListener('pointercancel', up);
   });
-  grip.addEventListener('dblclick', () => { if (wide.matches && document.body.classList.contains('side-mini')) toggleSide(); });
+  grip.addEventListener('dblclick', () => { if (wide.matches) toggleSide(); });
   grip.addEventListener('keydown', (e) => {
     if (!wide.matches || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
     e.preventDefault();
@@ -309,7 +312,10 @@ function stopStream() { if (es) { es.close(); es = null; } }
 
 // ---- boot ----
 (async () => {
-  const [config, countries] = await Promise.all([api('/api/config'), api('/api/countries')]);
+  // all first-page requests run at once (index.html already started them); the session check no longer waits for config
+  const me = loadMe(true);
+  cached('/api/currencies').catch(() => {});
+  const [config, countries] = await Promise.all([cached('/api/config'), cached('/api/countries')]);
   app.config = config;
   app.countryList = countries;
   app.countries = Object.fromEntries(countries.map((c) => [c.code, c]));
@@ -322,8 +328,8 @@ function stopStream() { if (es) { es.close(); es = null; } }
   $('#geo-x').addEventListener('click', () => { $('#geo').hidden = true; localStorage.setItem('paypal.geo', '1'); homeFab(); });
   $('#geo-go').addEventListener('click', () => { $('#geo').hidden = true; localStorage.setItem('paypal.geo', '1'); });
   app.setContext(null);
-  api('/api/ask/library').then((l) => { LIB = l; renderTry(); }).catch(() => {});
-  await loadMe();
+  cached('/api/ask/library').then((l) => { LIB = l; renderTry(); }).catch(() => {});
+  await me;
   renderTry();
   startStream();
   refreshCases();

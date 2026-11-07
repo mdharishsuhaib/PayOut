@@ -16,6 +16,21 @@ export async function api(path, opts = {}) {
   return data;
 }
 
+// Read-only data the first page needs. index.html starts these requests before the scripts load (window.__early);
+// every caller shares one response, so nothing is fetched twice or one after another.
+const memo = new Map();
+// the request index.html already started for this path (used once), or a fresh one
+export function early(path) {
+  const p = window.__early?.[path];
+  if (!p) return api(path);
+  delete window.__early[path];
+  return p.then((r) => r.json().catch(() => ({})).then((d) => { if (!r.ok) throw new Error(d.error || `Request failed (${r.status})`); return d; }), () => api(path));
+}
+export function cached(path) {
+  if (!memo.has(path)) memo.set(path, early(path).catch((e) => { memo.delete(path); throw e; }));
+  return memo.get(path);
+}
+
 let toastTimer;
 export function toast(msg, err = false) {
   const t = $('#toast');

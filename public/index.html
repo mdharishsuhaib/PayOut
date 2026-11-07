@@ -6,6 +6,11 @@
 <title>PayOut · Home</title>
 <meta name="description" content="PayPal checks every international PayPal payout against PayPal's published rules before money moves, follows what PayPal reports after, and helps you resolve what went wrong.">
 <link rel="icon" type="image/svg+xml" href="/paypal-mark.svg">
+<script>window.__early = Object.fromEntries(['/api/me', '/api/config', '/api/countries', '/api/currencies'].map((p) => { const f = fetch(p); f.catch(() => {}); return [p, f]; }));</script>
+<link rel="modulepreload" href="/util.js">
+<link rel="modulepreload" href="/views/home.js">
+<link rel="modulepreload" href="/views/auth.js">
+<link rel="modulepreload" href="/views/preflight.js">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600..800&family=Inter:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -20,7 +25,6 @@
 <link rel="stylesheet" href="/screens-d.css">
 <link rel="stylesheet" href="/home.css">
 <link rel="stylesheet" href="/sidebar.css">
-<script src="/vendor/ag-grid/ag-grid-community.min.js"></script>
 <script type="module" src="/app.js"></script>
 </head>
 <body>
@@ -47,7 +51,7 @@
   </nav>
   </div>
   <div class="side-foot">PayOut – A PayPal's Product</div>
-  <div class="side-grip" id="side-grip" role="separator" aria-orientation="vertical" aria-controls="side" aria-label="Drag to resize the sidebar" title="Drag to resize · double-click to expand" tabindex="0"></div>
+  <div class="side-grip" id="side-grip" role="separator" aria-orientation="vertical" aria-controls="side" aria-label="Double-click to hide. Drag or use the arrow keys to resize the sidebar." title="Double-click to hide" tabindex="0"></div>
 </aside>
 <div class="side-dim" id="side-dim" hidden></div>
 <header class="hdr" id="hdr">

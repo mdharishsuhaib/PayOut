@@ -34,8 +34,31 @@ returned.
 
 ---
 
+## Try It Now (for Judges)
+
+No install and no PayPal account needed:
+
+1. Open **[payout.mdharishsuhaib.workers.dev](https://payout.mdharishsuhaib.workers.dev)**. The
+   server runs on Render's free plan, so the first visit after a quiet spell can take up to a
+   minute while it wakes.
+2. Click **Login**, then **Try the demo**.
+3. On **Verify**, click **Sample**: 11 contractors in 9 countries are checked against PayPal's
+   rules. Click any row to see why it is ready, needs review or is restricted, and the AI's
+   explanation.
+4. Approve the rows you want and press **Send**. They go to the real PayPal Sandbox Payouts API.
+   Follow them in **Tracking**, **Signals** (verified PayPal webhooks) and **Resolve**.
+5. Try **Routes** (any sender country → recipient country → currency) and the floating
+   **PayPal AI** button.
+
+To use your own PayPal Sandbox account instead, click **Log in with PayPal** and sign in with a
+Sandbox **personal** account from developer.paypal.com (**Testing Tools > Sandbox Accounts**).
+To run it yourself, see [Quick Start](#quick-start).
+
+---
+
 ## Table of Contents
 
+- [Try It Now (for Judges)](#try-it-now-for-judges)
 - [Overview](#overview)
 - [Key Features](#key-features)
 - [System Architecture](#system-architecture)
@@ -52,7 +75,9 @@ returned.
 - [Running Tests](#running-tests)
 - [Troubleshooting](#troubleshooting)
 - [Learning Guide](#learning-guide)
+- [AI Tools Used](#ai-tools-used)
 - [Tech Stack](#tech-stack)
+- [License](#license)
 
 ---
 
@@ -132,7 +157,7 @@ flowchart TD
 
     subgraph Edge["Cloudflare Worker (frontend)"]
         Assets["Static assets<br/>public/"]
-        Proxy["worker.js<br/>forwards /api, /auth, /vendor"]
+        Proxy["worker.js<br/>forwards /api, /auth"]
     end
 
     subgraph Server["Express server on Render (backend)"]
@@ -180,7 +205,7 @@ flowchart TD
 ```
 
 - **Frontend** -- Plain HTML, CSS and ES modules (no build step) with AG Grid for the batch
-  table. Served by a Cloudflare Worker, which forwards `/api`, `/auth` and `/vendor` to the
+  table. Served by a Cloudflare Worker, which forwards `/api` and `/auth` to the
   backend, so the browser only ever talks to one site.
 - **Backend** -- Node.js 22 + Express 4 on Render. Holds the PayPal client secret, the rules
   engine, the AI calls and the data store.
@@ -244,10 +269,11 @@ PayOut/
 │   ├── views/                   # home, auth, preflight (Verify), routes, payouts (Tracking),
 │   │                            # signals, resolve, rules
 │   ├── *.css                    # app, sidebar, home, pages, screens-a..d, thread, views
+│   ├── vendor/                  # AG Grid table library (loaded on Verify only)
 │   └── payout-logo.svg, paypal-logo.svg, paypal-mark.svg, paypal-wordmark-white.svg
 ├── data/
 │   └── sample.csv               # 11 synthetic contractors in 9 countries
-├── worker.js                    # Cloudflare Worker: serves public/, forwards /api, /auth, /vendor to Render
+├── worker.js                    # Cloudflare Worker: serves public/, forwards /api and /auth to Render
 ├── wrangler.jsonc               # Cloudflare Worker settings: name, assets, BACKEND_URL
 ├── test/
 │   ├── rules.test.js            # Unit tests for the rules engine (npm test)
@@ -256,6 +282,7 @@ PayOut/
 ├── render.yaml                  # Render blueprint for the backend
 ├── .env.example                 # Every setting documented (no values)
 ├── package.json
+├── LICENSE                      # MIT
 └── README.md
 ```
 
@@ -351,7 +378,7 @@ The frontend is plain HTML, CSS and JavaScript modules in `public/`. There is no
 
 - **Locally:** `npm start` serves it at `http://localhost:3100` together with the API.
 - **Deployed:** the Cloudflare Worker (`worker.js`, `wrangler.jsonc`) serves `public/` and forwards `/api`,
-  `/auth`, `/vendor` and `/healthz` to the backend. Every call from the UI uses a relative path,
+  `/auth` and `/healthz` to the backend. Every call from the UI uses a relative path,
   so there is no backend URL or CORS to configure in the frontend.
 
 To preview the Worker locally against your local backend:
@@ -501,7 +528,7 @@ without changing the API, but it is not needed to run PayOut.
 ## Deployment
 
 **Live setup:** the **frontend** runs on a **Cloudflare Worker** and the **backend** on
-**Render**. The Worker serves `public/` and forwards `/api`, `/auth`, `/vendor` and `/healthz`
+**Render**. The Worker serves `public/` and forwards `/api`, `/auth` and `/healthz`
 to Render, so the browser only ever talks to one site: the PayPal login cookie, live updates and
 redirects keep working with no CORS or cross-site cookie setup.
 
@@ -509,7 +536,7 @@ redirects keep working with no CORS or cross-site cookie setup.
 flowchart LR
     B["Browser"] --> W["Cloudflare Worker<br/>payout.mdharishsuhaib.workers.dev"]
     W -- "pages" --> A[("public/")]
-    W -- "/api, /auth, /vendor" --> R["Render<br/>Express server"]
+    W -- "/api, /auth" --> R["Render<br/>Express server"]
     R --> P[("PayPal Sandbox")]
     P -- "webhooks" --> W
 ```
@@ -673,12 +700,36 @@ JPY). **SSE** -- server-sent events, a one-way live stream from server to browse
 
 ---
 
+## AI Tools Used
+
+| Tool | What it is | How PayOut uses it |
+|---|---|---|
+| **`gpt-oss:120b` on Ollama Cloud** | Open-weight large language model, called through Ollama's OpenAI-compatible API (`lib/ai.js`) | **Explain:** turns the rules engine's findings for a row into 3 plain sentences plus a "Next:" step. **PayPal AI:** answers payout questions about the screen you are on, using **tool calls** (`country_profile`, `check_route`) into PayOut's own rules, so country and currency answers come from code, not from the model's memory. **Paste:** turns free text like `Priya priya@studio.in 200 USD India` into payout rows. **Resolve:** explains a failed, held or unclaimed payout from PayPal's live status and drafts a message to the recipient. |
+| **Tavily Search API** | Web search API | Fallback when the model is unavailable: searches **only PayPal's own sites** (developer.paypal.com, paypal.com) and shows the answer with its PayPal source links. |
+| **Built-in templates** | Fixed wording in code | Last fallback, so every screen still works with no AI key. |
+
+**Guardrails:** the AI never decides whether a payout may be sent. Eligibility comes only from
+the deterministic rules engine (`lib/rules.js`), and every AI answer is labelled as AI. The
+model is told to say "check with PayPal" instead of guessing limits, fees or KYC rules. Any
+OpenAI-compatible model can be used by changing `AI_BASE_URL` and `AI_MODEL`.
+
+**PayPal developer tools:** PayPal Payouts REST API, PayPal Webhooks with signature
+verification, Log in with PayPal (OpenID Connect) and the PayPal Sandbox.
+
+---
+
 ## Tech Stack
 
 Node.js 22 · Express 4 · Vanilla JavaScript (ES modules) · HTML · CSS · AG Grid ·
 PayPal Payouts API · PayPal Webhooks · Log in with PayPal (OpenID Connect) · PayPal Sandbox ·
 Ollama Cloud (`gpt-oss:120b`) · Tavily Search · Server-sent events · JSON file store ·
 Cloudflare Workers · Wrangler · Render
+
+---
+
+## License
+
+Released under the [MIT License](LICENSE).
 
 ---
 

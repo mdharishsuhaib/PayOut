@@ -1,10 +1,10 @@
 // RULES · Devpost-style searchable library: tabs, filter sidebar, rich cards, detail sheet.
-import { $, $$, esc, api, pill, docName, band } from '../util.js';
+import { $, $$, esc, api, pill, docName, band, cached } from '../util.js';
 import { listShell, renderFilters, passes, tally } from '../list.js';
 
 export async function render(el, app, [tab0]) {
   const tab = tab0 === 'currency' ? 'currency' : 'country';
-  const countries = app.countryList, currencies = await api('/api/currencies');
+  const countries = app.countryList, currencies = await cached('/api/currencies');
   const tabs = `<a href="#/rules/country" ${tab === 'country' ? 'aria-current="page"' : ''}>Country <b class="tc">${countries.length}</b></a><a href="#/rules/currency" ${tab === 'currency' ? 'aria-current="page"' : ''}>Currency <b class="tc">${currencies.length}</b></a>`;
   el.innerHTML = band({ title: 'Rules', lead: 'The published PayPal Payouts policy PayOut checks against, in plain English, each entry linked to its PayPal source.',
     facts: `<span class="tag navy">${esc(app.config.rulesVersion)}</span>`, tabs })

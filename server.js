@@ -11,7 +11,7 @@ import { batches, events } from './lib/store.js';
 import * as login from './lib/login.js';
 
 const app = express();
-// Deployed: the pages are served by a Cloudflare Worker that forwards /api, /auth and /vendor here (Render), so the
+// Deployed: the pages are served by a Cloudflare Worker that forwards /api and /auth here (Render), so the
 // browser only ever talks to one site. Trust the proxies' X-Forwarded-Proto (Secure cookies) and use the public host
 // the Worker reports, so redirects, cookies and the demo's same-site check use the address the customer sees.
 app.set('trust proxy', true);
@@ -28,8 +28,7 @@ app.use((req, res, next) => {
 });
 app.use(express.json({ limit: '5mb' }));
 app.use(express.text({ type: 'text/csv', limit: '5mb' }));
-app.use(express.static('public', { extensions: ['html'], setHeaders: (res) => res.setHeader('Cache-Control', 'no-cache') }));
-app.use('/vendor/ag-grid', express.static('node_modules/ag-grid-community/dist'));
+app.use(express.static('public', { extensions: ['html'], setHeaders: (res, file) => res.setHeader('Cache-Control', /[\\/]vendor[\\/]/.test(file) ? 'public, max-age=31536000, immutable' : 'no-cache') }));
 
 const SENDER = () => normCountry(process.env.SENDER_COUNTRY || 'US');
 const SANDBOX_RECEIVER = () => process.env.SANDBOX_RECEIVER_EMAIL || 'sb-receiver@personal.example.com';
@@ -493,4 +492,9 @@ app.post('/api/webhooks/paypal', wrap(async (req, res) => {
 }));
 
 const port = process.env.PORT || 3100;
-app.listen(port, () => console.log(`PayPal on http://localhost:${port}  ·  PayPal ${pp.paypalLive() ? 'sandbox' : 'simulated'}  ·  AI ${llmLive() ? llmModel() : 'templates'}${searchLive() ? ` (fallback ${SEARCH_NAME} PayPal docs search)` : ''}`));
+app.listen(port, () => {
+  console.log(`PayPal on http://localhost:${port}  ·  PayPal ${pp.paypalLive() ? 'sandbox' : 'simulated'}  ·  AI ${llmLive() ? llmModel() : 'templates'}${searchLive() ? ` (fallback ${SEARCH_NAME} PayPal docs search)` : ''}`);
+  // warm the PayPal token and the login check now, so the first visitor's page does not wait on PayPal
+  pp.checkAccess().catch(() => {});
+  if (process.env.PAYPAL_RETURN_URL) login.loginReady(process.env.PAYPAL_RETURN_URL).catch(() => {});
+});

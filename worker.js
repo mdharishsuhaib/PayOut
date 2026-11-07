@@ -1,8 +1,8 @@
 // PayOut frontend on Cloudflare Workers (deploy: npx wrangler deploy).
-// The pages (public/) are served as static assets. /api, /auth, /vendor and /healthz are forwarded to the PayOut
+// The pages (public/) are served as static assets. /api, /auth and /healthz are forwarded to the PayOut
 // server on Render (BACKEND_URL), so the browser only ever talks to this one site: the login cookie, live updates
 // (server-sent events) and redirects all keep working without any cross-site setup.
-const FORWARD = /^\/(api|auth|vendor)(\/|$)|^\/healthz$/;
+const FORWARD = /^\/(api|auth)(\/|$)|^\/healthz$/;
 
 export default {
   async fetch(request, env) {

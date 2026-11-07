@@ -1,9 +1,9 @@
 // HOME · what is happening to my payouts right now (PayPal-home layout, live data only)
-import { $, $$, esc, api } from '../util.js';
+import { $, $$, esc, api, cached } from '../util.js';
 
 export async function render(el, app) {
   const nCountries = app.countryList.length, nSend = app.countryList.filter((c) => c.canSendPayouts).length;
-  const currencies = await api('/api/currencies').catch(() => []);
+  const currencies = await cached('/api/currencies').catch(() => []);
   const nCur = currencies.filter((c) => c.payment).length;
   const TOOLS = {
     check: { lead: 'Check every row before any money moves. Stop the routes PayPal\'s published rules don\'t allow, and get a plain reason for each one.', items: [

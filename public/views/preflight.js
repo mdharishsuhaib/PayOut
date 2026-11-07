@@ -1,7 +1,20 @@
 // PREFLIGHT · Import → Map → Check → Review → Send
 import { $, $$, esc, api, toast, money, confirmDialog, ICONS, srcTag, countUp } from '../util.js';
-import { createBatchGrid } from '../grid.js';
 import { renderInspect } from '../inspect.js';
+
+// The table library (AG Grid, ~1.9 MB) is only needed here, so it loads on first use instead of holding up every page.
+let gridLoad = null;
+export function loadGrid() {
+  gridLoad ||= new Promise((ok, fail) => {
+    if (window.agGrid) return ok();
+    const s = document.createElement('script');
+    s.src = '/vendor/ag-grid-community-36.3.0.min.js';
+    s.onload = ok;
+    s.onerror = () => { s.remove(); fail(new Error('The payout table could not load. Check your connection and refresh the page.')); };
+    document.head.append(s);
+  }).then(() => import('../grid.js')).catch((e) => { gridLoad = null; throw e; });
+  return gridLoad;
+}
 
 const STEPS = ['Import', 'Map', 'Check', 'Review', 'Send'];
 const FIELD = { ref: 'Ref', name: 'Name', receiver: 'Receiver', recipientType: 'Type', wallet: 'Wallet', country: 'Country', currency: 'Currency', amount: 'Amount', fromCountry: 'Origin', note: 'Note' };
@@ -38,6 +51,10 @@ export async function render(el, app, [batchId]) {
     </section></div>`;
 
   const visible = (r) => ctx.filter === 'all' ? true : ctx.filter === 'sent' ? !!r.payout : r.decision === ctx.filter && !r.payout;
+  const firstList = batchId ? null : api('/api/batches').catch(() => []); // fetched while the table library loads
+  const firstBatch = batchId ? api(`/api/batches/${batchId}`) : null;
+  firstBatch?.catch(() => {});
+  const { createBatchGrid } = await loadGrid();
   const grid = createBatchGrid($('#grid', el), {
     onSelect: (ref) => { ctx.selected = ref; inspect(); },
     onEdit: (ref, patch) => ctx.patchRow(ref, patch),
@@ -155,10 +172,10 @@ export async function render(el, app, [batchId]) {
   $('#new', el).addEventListener('click', toIntake);
   $('#pf-back', el).addEventListener('click', toIntake);
 
-  async function recent() {
-    const bs = await api('/api/batches').catch(() => []);
+  async function recent(first) {
+    const bs = await (first || api('/api/batches').catch(() => []));
     $('#recent', el).innerHTML = bs.length ? `<span class="lbl">Batches</span><ol>${bs.slice(0, 5).map((b) => `<li><a href="#/preflight/${esc(b.id)}"><b>${esc(b.name)}</b><span class="muted">${b.summary.total} rows · ${b.payout ? 'sent' : 'not sent'}</span><span class="mono muted">${new Date(b.createdAt).toLocaleDateString()}</span></a></li>`).join('')}</ol>` : '';
   }
-  if (batchId) { try { ctx.setBatch(await api(`/api/batches/${batchId}`)); } catch { recent(); } } else recent();
+  if (batchId) { try { ctx.setBatch(await firstBatch); } catch { recent(); } } else recent(firstList);
   return app.on((type, d) => { if (ctx.batch && (!d.batchId || d.batchId === ctx.batch.id)) api(`/api/batches/${ctx.batch.id}`).then((b) => ctx.setBatch(b)); });
 }
