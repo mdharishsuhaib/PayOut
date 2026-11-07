@@ -1,0 +1,46 @@
+/* PayPal LOOM - screens */
+.cell-mono { font-family: var(--mono); font-size: 12.5px; }
+.cell-muted { color: var(--muted); }
+.cell-warn { color: var(--review-ink); font-weight: 600; }
+.tick { color: var(--cobalt); font-weight: 700; }
+.reveal { animation: reveal var(--t-panel) var(--ease); }
+.lbl + * { margin-top: 6px; }
+.srcl { display: inline-block; margin-top: 6px; font-size: 12px; color: var(--cobalt); text-decoration: none; }
+.srcl:hover { text-decoration: underline; }
+.banner { padding: 10px 16px; border-radius: var(--r-s); margin-bottom: 16px; font-size: 13px; border: 1px solid; }
+.banner.warn { background: var(--review-bg); border-color: #ecd3a6; color: var(--review-ink); }
+.note { display: flex; gap: 8px; font-size: 12.5px; color: var(--ink); background: var(--mist); padding: 8px 10px; border-radius: var(--r-s); margin: 8px 0 0; }
+.note svg { width: 15px; height: 15px; margin-top: 2px; color: var(--cobalt); }
+.note.bad { background: var(--restricted-bg); color: var(--restricted); }
+.note.bad svg { color: var(--restricted); }
+
+/* segmented filter */
+.seg { display: flex; gap: 2px; padding: 3px; background: var(--canvas); border: 1px solid var(--border); border-radius: 8px; width: max-content; max-width: 100%; overflow-x: auto; }
+.seg button { border: 0; background: transparent; height: 28px; padding: 0 10px; border-radius: 6px; font-size: 12.5px; font-weight: 600; color: var(--muted); cursor: pointer; white-space: nowrap; transition: background var(--t-btn), color var(--t-btn); }
+.seg button b { font: 500 11.5px var(--mono); margin-left: 4px; color: inherit; opacity: .8; }
+.seg button[aria-pressed=true], .seg button[aria-selected=true] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(17, 27, 60, .1); }
+
+/* shared list rows (queue, ledger) */
+.queue { list-style: none; margin: 0; padding: 4px 0; }
+.queue li a { display: flex; align-items: center; gap: 12px; padding: 10px 16px; text-decoration: none; transition: background var(--t-row); }
+.queue li a:hover { background: #f8faff; }
+.queue li + li a { border-top: 1px solid var(--hair); }
+.queue a > span:not(.st):not(.r):not(.bar) { min-width: 0; flex: 1; display: grid; }
+.queue b { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.queue small { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.queue .r { display: grid; justify-items: end; gap: 2px; flex: none; }
+.pri { width: 3px; align-self: stretch; min-height: 28px; border-radius: 2px; flex: none; background: var(--pending-dot); }
+.pri.ready { background: var(--ready); }
+.pri.review { background: var(--review); }
+.pri.restricted { background: var(--restricted); }
+.queue .bar { display: flex; width: 72px; height: 6px; border-radius: 3px; overflow: hidden; background: var(--hair); flex: none; gap: 1px; }
+.l-rows { list-style: none; margin: 0; padding: 0; overflow: auto; }
+.l-rows button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 16px; border: 0; border-top: 1px solid var(--hair); background: none; text-align: left; cursor: pointer; transition: background var(--t-row); }
+.l-rows li:first-child button { border-top: 0; }
+.l-rows button:hover { background: #f8faff; }
+.l-rows button[aria-current=true] { background: var(--mist); box-shadow: inset 3px 0 0 var(--cobalt); }
+.l-rows .who { flex: 1; min-width: 0; display: grid; }
+.l-rows .who b { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.l-rows small { font-size: 11.5px; color: var(--muted); }
+.l-rows .r { display: grid; justify-items: end; }
+.l-rows .r b { font-size: 12.5px; font-weight: 500; }

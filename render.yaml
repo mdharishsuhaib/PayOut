@@ -1,0 +1,38 @@
+# PayOut server on Render: New > Blueprint > pick this repo. Secrets marked sync: false are asked for on first deploy.
+services:
+  - type: web
+    name: payout-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: PAYPAL_API_BASE
+        value: https://api-m.sandbox.paypal.com
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      # https://<your-worker>.workers.dev/auth/paypal/callback (also add it under "Log in with PayPal" on developer.paypal.com)
+      - key: PAYPAL_RETURN_URL
+        sync: false
+      # from the webhook you create on developer.paypal.com pointing at https://<your-worker>.workers.dev/api/webhooks/paypal
+      - key: PAYPAL_WEBHOOK_ID
+        sync: false
+      - key: SENDER_COUNTRY
+        value: US
+      - key: SANDBOX_RECEIVER_EMAIL
+        sync: false
+      - key: AI_API_KEY
+        sync: false
+      - key: AI_BASE_URL
+        value: https://ollama.com/v1
+      - key: AI_MODEL
+        value: gpt-oss:120b
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: REVIEW_AMOUNT
+        value: "2500"

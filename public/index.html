@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayOut · Home</title>
+<meta name="description" content="PayPal checks every international PayPal payout against PayPal's published rules before money moves, follows what PayPal reports after, and helps you resolve what went wrong.">
+<link rel="icon" type="image/svg+xml" href="/paypal-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600..800&family=Inter:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/app.css">
+<link rel="stylesheet" href="/thread.css">
+<link rel="stylesheet" href="/views.css">
+<link rel="stylesheet" href="/screens-a.css">
+<link rel="stylesheet" href="/screens-b.css">
+<link rel="stylesheet" href="/screens-c.css">
+<link rel="stylesheet" href="/pages.css">
+<link rel="stylesheet" href="/pages-2.css">
+<link rel="stylesheet" href="/screens-d.css">
+<link rel="stylesheet" href="/home.css">
+<link rel="stylesheet" href="/sidebar.css">
+<script src="/vendor/ag-grid/ag-grid-community.min.js"></script>
+<script type="module" src="/app.js"></script>
+</head>
+<body>
+<script>history.scrollRestoration = 'manual'; scrollTo(0, 0);</script>
+<a class="skip" href="#view">Skip to content</a>
+<div class="geo" id="geo" hidden><div class="geo-in"><p>See what PayPal's Payout supports in your country.<a href="#/rules" id="geo-go">View country rules</a></p><button class="icon" id="geo-x" aria-label="Dismiss"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
+<aside class="side" id="side" aria-label="PayOut features" hidden>
+  <div class="side-top">
+    <a class="side-brand" href="#/preflight" aria-label="PayOut home"><img class="full" src="/payout-logo.svg" alt="PayOut" width="128" height="35"><img class="mark" src="/paypal-mark.svg" alt="PayOut" width="30" height="30"></a>  </div>
+  <div class="side-scroll">
+  <nav class="nav" id="nav" aria-label="Sections">
+    <a href="#/preflight" data-view="preflight" title="Verify"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6l7-3z"/><path d="M8.8 12.2l2.2 2.2 4.2-4.4"/></svg><span>Verify</span></a>
+    <a href="#/routes" data-view="routes" title="Routes"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="6" r="2.2"/><path d="M8.2 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.8"/></svg><span>Routes</span></a>
+    <a href="#/payouts" data-view="payouts" title="Tracking"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span>Tracking</span></a>
+    <hr class="side-sep">
+    <a href="#/signals" data-view="signals" title="Signals"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6.5 2 6.5H4S6 14 6 9z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg><span>Signals</span></a>
+    <a href="#/resolve" data-view="resolve" title="Resolve"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.1L4 16.7 7.3 20l5.3-5.3a4 4 0 0 0 5.1-5.4l-2.5 2.5-2.4-.6-.6-2.4 2.5-2.5z"/></svg><span>Resolve</span><b class="n" id="nav-n" hidden></b></a>
+    <a href="#/rules" data-view="rules" title="Rules"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h9.5a3 3 0 0 1 3 3v12H8a3 3 0 0 1-3-3v-12z"/><path d="M5 16.5a3 3 0 0 1 3-3h9.5M9 8.5h5"/></svg><span>Rules</span></a>
+  </nav>
+  <nav class="nav side-more" aria-label="Help and resources">
+    <hr class="side-sep">
+    <button type="button" id="side-ai" title="PayPal AI"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9L12 3.5z"/><path d="M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2z"/></svg><span>PayPal AI</span></button>
+    <a href="https://developer.paypal.com/docs/payouts/standard/" target="_blank" rel="noopener" title="Payouts docs"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h7l4 4v13H7a1.5 1.5 0 0 1-1.5-1.5V5A1.5 1.5 0 0 1 7 3.5z"/><path d="M14 3.5v4h4M9 12h6M9 15.5h6"/></svg><span>Payouts docs</span><i class="ext" aria-hidden="true">↗</i></a>    <a href="https://www.paypal.com/in/cshelp/business" target="_blank" rel="noopener" title="Help"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.1-2.4 3.6M12 17h.01"/></svg><span>Help</span><i class="ext" aria-hidden="true">↗</i></a>
+  </nav>
+  </div>
+  <div class="side-foot">PayOut – A PayPal's Product</div>
+  <div class="side-grip" id="side-grip" role="separator" aria-orientation="vertical" aria-controls="side" aria-label="Drag to resize the sidebar" title="Drag to resize · double-click to expand" tabindex="0"></div>
+</aside>
+<div class="side-dim" id="side-dim" hidden></div>
+<header class="hdr" id="hdr">
+  <div class="hdr-in">
+    <button class="burger" id="burger" aria-label="Show or hide the menu" aria-controls="side" aria-expanded="true" hidden><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <a class="brand" href="#/home" aria-label="PayOut home"><img src="/payout-logo.svg" alt="PayOut" width="116" height="32"></a>
+    <div class="hdr-r">
+      <span class="user-tag" id="user-tag" hidden></span>
+      <a class="pill ghost" id="login" href="#/login">Login</a>
+      <a class="pill dark" id="signup" href="#/signup">Sign Up</a>
+      <button class="pill ghost" id="logout" type="button" hidden>Log out</button>
+    </div>
+  </div>
+</header>
+
+<div class="shell" id="shell">
+  <main id="view" class="view" tabindex="-1"></main>
+</div>
+<button class="ppfab" id="ppfab" type="button" aria-label="PayPal AI. Click to open, drag or use arrow keys to move." aria-expanded="false" aria-controls="ask" title="PayPal AI · drag to move">
+  <span class="ppfab-in"><img src="/paypal-mark.svg" alt="" width="30" height="30" draggable="false"></span>
+</button>
+<aside class="ask" id="ask" aria-label="PayPal AI" hidden>
+    <div class="ask-h"><h2 class="ppai" aria-label="PayPal AI"><img src="/paypal-logo.svg" alt="" draggable="false"><span class="ai" aria-hidden="true"><i class="ai-a">A</i><i class="ai-i">I</i></span></h2><button class="icon" id="ask-close" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="ask-b" id="ask-b">
+      <h3 class="ask-hi">What can I help you with?</h3>
+      <p class="ask-intro">Explore common payout questions or ask about your current transaction.</p>
+      <div class="ask-try" id="ask-try"></div>
+      <button type="button" class="ask-more" id="ask-more">← Questions and topics</button>
+      <div id="thread-q" class="ask-log"></div>
+    </div>
+    <form class="ask-f" id="ask-f"><input id="ask-q" type="text" autocomplete="off" placeholder="Ask about this…" aria-label="Question"><button class="pill" type="submit">Ask</button></form>
+</aside>
+
+<footer class="ftr">
+  <div class="ftr-in">
+    <a class="ftr-logo" href="#/home" aria-label="PayPal home"><img src="/paypal-wordmark-white.svg" alt="PayPal" width="118" height="32"></a>
+    <div class="ftr-top">
+      <nav class="ftr-row" aria-label="PayPal help">
+        <a href="https://www.paypal.com/in/cshelp/personal" target="_blank" rel="noopener">Help</a>
+        <a href="https://www.paypal.com/in/smarthelp/contact-us" target="_blank" rel="noopener">Contact us</a>
+        <a href="https://www.paypal.com/in/webapps/mpp/paypal-fees" target="_blank" rel="noopener">Fees</a>
+        <a href="https://www.paypal.com/in/webapps/mpp/paypal-safety-and-security" target="_blank" rel="noopener">Security</a>
+        <a href="https://www.paypal.com/in/webapps/mpp/shop" target="_blank" rel="noopener">Shop</a>
+        <a href="https://www.paypal.com/in/business" target="_blank" rel="noopener">Business Resource Center</a>
+      </nav>
+      <span class="ftr-flag" id="f-country"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>India</span>
+    </div>
+    <hr>
+    <nav class="ftr-row sub" aria-label="About PayPal">
+      <a href="https://about.pypl.com/" target="_blank" rel="noopener">About</a>
+      <a href="https://newsroom.paypal-corp.com/" target="_blank" rel="noopener">Newsroom</a>
+      <a href="https://careers.pypl.com/" target="_blank" rel="noopener">Jobs</a>
+      <a href="https://developer.paypal.com/" target="_blank" rel="noopener">Developers</a>
+      <a href="https://www.paypal.com/in/webapps/mpp/partner-program/global-programs" target="_blank" rel="noopener">Partners</a>
+      <a href="https://www.paypal.com/in/webapps/mpp/accessibility" target="_blank" rel="noopener">Accessibility</a>
+      <a href="https://www.paypal.com/in/legalhub/cookie-full" target="_blank" rel="noopener">Cookies</a>
+      <a href="https://www.paypal.com/in/legalhub/privacy-full" target="_blank" rel="noopener">Privacy</a>
+      <a href="https://www.paypal.com/in/webapps/mpp/csr" target="_blank" rel="noopener">CSR</a>
+      <a href="https://www.paypal.com/in/webapps/mpp/annual-returns" target="_blank" rel="noopener">Annual Returns</a>
+      <a href="https://www.paypal.com/in/legalhub/home" target="_blank" rel="noopener">Legal</a>
+    </nav>
+    <div class="ftr-legal">
+      <p>This is a hackathon project built on the PayPal Payouts API and the PayPal Sandbox. It is not an official PayPal product and is not provided by PayPal Payments Private Limited. Users are advised to read PayPal's <a href="https://www.paypal.com/in/legalhub/useragreement-full" target="_blank" rel="noopener">terms and conditions</a> carefully.</p>
+      <p>When you use this site, it stores one cookie to keep you logged in with PayPal and uses your browser's local storage to remember layout choices, such as where you placed the PayPal AI button. No advertising or tracking cookies are used. PayPal's own use of cookies is explained <a href="https://www.paypal.com/in/legalhub/cookie-full" target="_blank" rel="noopener">here</a>.</p>
+      <p class="ftr-gap">All screen images are for illustrative purposes only.</p>
+      <ol class="ftr-notes">
+        <li>Checks use PayPal's published country and currency rules (<span id="f-ver"></span>). Account-specific outcomes must be confirmed with PayPal. See the <a id="f-countries" target="_blank" rel="noopener">country rules</a>.</li>
+        <li>Payouts are sent from a PayPal Sandbox business account, so no real money moves. Unclaimed payouts are returned after 30 days. <a href="https://www.paypal.com/in/webapps/mpp/paypal-fees" target="_blank" rel="noopener">See fees</a>.</li>
+      </ol>
+    </div>
+  </div>
+</footer>
+
+<dialog id="confirm" aria-labelledby="confirm-h"><form method="dialog"><h2 id="confirm-h"></h2><div id="confirm-body"></div><div class="row-end"><button class="pill ghost" value="no">Back</button><button class="pill" value="yes" id="confirm-yes">Confirm</button></div></form></dialog>
+<dialog id="sheet" class="sheet" aria-labelledby="sheet-h"><div id="sheet-b"></div><form method="dialog" class="row-end"><button class="pill ghost">Close</button></form></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

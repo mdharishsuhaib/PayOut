@@ -1,0 +1,69 @@
+/* THREAD · route through six checkpoints. Motion is state, never decoration. */
+.thread { --dot: 30px; --step: 90ms; position: relative; padding-top: 8px; }
+.thread.sm { --dot: 20px; --step: 70ms; }
+.thread.lg { --dot: 40px; --step: 100ms; }
+.thread.has-cut { padding-top: 40px; }
+.t-track { position: absolute; left: calc(50% / var(--n)); right: calc(50% / var(--n)); top: calc(var(--pt, 0px) + 8px + var(--dot) / 2 - 1px); height: 2px; display: flex; }
+.thread.has-cut .t-track { top: calc(40px + var(--dot) / 2 - 1px); }
+.t-seg { position: relative; flex: 1; height: 2px; background: var(--hair); }
+.t-seg::after { content: ''; position: absolute; inset: 0; transform-origin: left center; background: var(--cobalt);
+  animation: thread-draw calc(var(--step) * 1.3) linear both; animation-delay: calc(var(--i) * var(--step)); }
+.t-seg.warn::after { background: linear-gradient(90deg, var(--cobalt), var(--review)); }
+.t-seg.bad::after { background: linear-gradient(90deg, var(--cobalt), var(--restricted)); }
+.t-seg.wait::after { background: repeating-linear-gradient(90deg, var(--peri) 0 6px, transparent 6px 11px); }
+.t-seg.cut { background: transparent; }
+.t-seg.cut::after { background: repeating-linear-gradient(90deg, var(--pending-border) 0 3px, transparent 3px 8px); animation: none; }
+.thread.still .t-seg::after { animation: none; }
+@keyframes thread-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.t-nodes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); }
+.t-nodes li { position: relative; display: flex; justify-content: center; min-width: 0; }
+/* .thread .t-node (not .t-node): a checkpoint's state class can be "note", and the site's general .note callout style
+   (flex, padding, tinted background) must never apply to a checkpoint */
+.thread .t-node { display: grid; justify-items: center; gap: 2px; margin: 0; padding: 0 2px 4px; border: 0; background: none; cursor: pointer; min-width: 0; max-width: 100%; border-radius: 6px; color: var(--ink); font-size: inherit; }
+.t-node[aria-disabled] { cursor: default; }
+.t-dot { position: relative; display: grid; place-items: center; flex: none; width: var(--dot); height: var(--dot); border-radius: 50%; background: var(--surface); border: 2px solid var(--pending-border); color: #fff; margin-bottom: 6px; transition: transform var(--t-btn), box-shadow var(--t-btn); }
+.thread .t-dot svg { width: 60%; height: 60%; margin: 0; stroke-width: 2.6; color: inherit; }
+.thread.sm .t-dot { border-width: 1.5px; margin-bottom: 4px; }
+.t-node b { font: 600 12.5px/1.2 var(--sans); white-space: nowrap; }
+.t-node small { font-size: 11.5px; font-weight: 500; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.t-node code { margin-top: 2px; font-size: 11px; color: var(--muted); background: var(--canvas); padding: 0 5px; border-radius: 3px; }
+.thread.sm .t-node b { font-size: 11px; }
+.thread.sm .t-node small { font-size: 10.5px; }
+.thread.lg .t-node b { font-size: 13.5px; }
+
+/* states */
+.t-node.pass .t-dot, .t-node.note .t-dot, .t-node.live .t-dot { background: var(--cobalt); border-color: var(--cobalt); }
+.t-node[data-node=result].pass .t-dot { background: var(--ready); border-color: var(--ready); }
+.t-node[data-node=result].pass small { color: var(--ready); font-weight: 600; }
+.t-node.review .t-dot { background: var(--review-bg); border-color: var(--review); color: var(--review-ink); }
+.t-node.review small { color: var(--review-ink); font-weight: 600; }
+.t-node.block .t-dot { background: var(--restricted); border-color: var(--restricted); }
+.t-node.block small { color: var(--restricted); font-weight: 600; }
+.t-node.wait .t-dot, .t-node.idle .t-dot { background: var(--pending-bg); border-color: var(--pending-border); color: var(--pending-dot); }
+.t-node.off .t-dot { background: var(--surface); border: 1.5px dashed var(--pending-border); }
+.t-node.off b, .t-node.off small { color: #a3adc2; }
+.t-node.demo .t-dot { outline: 1.5px dashed var(--pending-dot); outline-offset: 2px; }
+.t-node:not([aria-disabled]):hover .t-dot { transform: scale(1.08); }
+.t-node[aria-pressed=true] .t-dot { box-shadow: 0 0 0 4px var(--mist), 0 0 0 5px var(--peri); }
+.t-node[aria-pressed=true] b { color: var(--cobalt-2); }
+
+/* GatePop: each checkpoint pops once as the thread reaches it */
+.t-node .t-dot { animation: gate var(--t-gate) var(--ease) both; animation-delay: calc(var(--i) * var(--step)); }
+.thread.still .t-node .t-dot { animation: none; }
+@keyframes gate { 0% { transform: scale(.6); opacity: .3; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+/* Trace: a real status change rings the checkpoint once */
+.t-node.trace .t-dot::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--peri); animation: trace 700ms var(--ease) 2 both; }
+@keyframes trace { from { transform: scale(.8); opacity: 1; } to { transform: scale(1.7); opacity: 0; } }
+
+/* the exception branch: leaves the stopped node, upward */
+.t-exit { position: absolute; left: calc(50% + var(--dot) / 2 - 2px); bottom: calc(100% - var(--dot) / 2 - 1px - 40px + 40px); width: 72px; height: 34px; overflow: visible; stroke: var(--restricted); stroke-width: 2; fill: none; }
+.t-nodes li .t-exit { top: calc(var(--dot) / 2 - 33px); bottom: auto; }
+.t-exit path:first-child { stroke-dasharray: 80; stroke-dashoffset: 80; animation: exit-draw 260ms var(--ease) forwards; animation-delay: calc(var(--i) * var(--step) + 120ms); }
+.thread.still .t-exit path:first-child { animation: none; stroke-dashoffset: 0; }
+.t-exit .x { stroke-width: 2.2; }
+@keyframes exit-draw { to { stroke-dashoffset: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .t-seg::after, .t-node .t-dot, .t-exit path:first-child { animation: none !important; stroke-dashoffset: 0; }
+}

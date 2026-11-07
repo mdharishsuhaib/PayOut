@@ -1,0 +1,12 @@
+reference,name,receiver,receiver_type,wallet,country,currency,amount,from_country,note
+PG-1001,Amelia Hart,{{SANDBOX_RECEIVER}},EMAIL,PAYPAL,GB,GBP,180.00,,October illustration work
+PG-1002,Rahul Mehta,rahul.mehta@example.com,EMAIL,PAYPAL,US,USD,240.00,IN,Paid by the Bengaluru entity
+PG-1003,Kavya Iyer,{{SANDBOX_RECEIVER_IN}},EMAIL,PAYPAL,IN,USD,150.00,,Translation
+PG-1004,Priya Nair,priya.nair@example.com,EMAIL,PAYPAL,IN,EUR,200.00,,Design sprint
+PG-1005,Arjun Rao,arjun.rao@example.com,EMAIL,PAYPAL,IN,INR,15000,,Voice-over
+PG-1006,Amelia Hart,{{SANDBOX_RECEIVER}},EMAIL,PAYPAL,GB,GBP,180.00,,October illustration work
+PG-1007,Diego Ramos,diego.ramos@example.com,EMAIL,PAYPAL,MX,USD,300.00,,QA testing
+PG-1008,Kenji Sato,kenji.sato@example.com,EMAIL,PAYPAL,JP,JPY,25000.50,,Localization
+PG-1009,Lucía Fernández,lucia.fernandez@example.com,EMAIL,PAYPAL,AR,EUR,120.00,,Moderation
+PG-1010,Sam Okafor,sam.okafor@example.com,EMAIL,PAYPAL,NG,USD,90.00,,Community support
+PG-1011,Noah Kim,,EMAIL,PAYPAL,CA,CAD,75.00,,Captioning
