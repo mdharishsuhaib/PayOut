@@ -10,7 +10,7 @@
   },
   "vars": {
     // The PayOut server on Render (Dashboard > your service > the URL at the top). No trailing slash.
-    "BACKEND_URL": "https://payout-api.onrender.com"
+    "BACKEND_URL": "https://payout-api-b86t.onrender.com"
   },
   "observability": { "enabled": true }
 }
